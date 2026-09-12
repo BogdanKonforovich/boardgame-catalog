@@ -36,6 +36,10 @@ main > section {
     margin-bottom: 10px;
 }
 
+summary {
+    cursor: pointer;
+}
+
 #filters {
     padding: 20px;
     background-color: #1a9e8f;
