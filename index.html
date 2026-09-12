@@ -21,40 +21,44 @@
                     <summary>Відкрити фільтри</summary>
 
                     <form>
-                        <h3 id="categories">Категорії</h3>
-                        <input type="checkbox" name="category" id="all" checked>
-                        <label for="all">Всі</label> <br>
+                        <fieldset>
+                            <h3 id="categories">Категорії</h3>
+                            <input type="checkbox" class="category" name="category" id="all" checked>
+                            <label for="all">Всі</label> <br>
 
-                        <input type="checkbox" name="category" id="strategic">
-                        <label for="strategic">Стратегія</label> <br>
+                            <input type="checkbox" class="category" name="category" id="strategic">
+                            <label for="strategic">Стратегія</label> <br>
 
-                        <input type="checkbox" name="category" id="logic_puzzles">
-                        <label for="logic_puzzles">Логічні головоломки</label> <br>
+                            <input type="checkbox" class="category" name="category" id="logic_puzzles">
+                            <label for="logic_puzzles">Логічні головоломки</label> <br>
 
-                        <input type="checkbox" name="category" id="card_based">
-                        <label for="card_based">Карткові</label> <br>
+                            <input type="checkbox" class="category" name="category" id="card_based">
+                            <label for="card_based">Карткові</label> <br>
 
-                        <input type="checkbox" name="category" id="games_of_chance">
-                        <label for="games_of_chance">Ігри на удачу</label> <br>
+                            <input type="checkbox" class="category" name="category" id="games_of_chance">
+                            <label for="games_of_chance">Ігри на удачу</label> <br>
 
-                        <input type="checkbox" name="category" id="economic">
-                        <label for="economic">Економічні</label> <br>
+                            <input type="checkbox" class="category" name="category" id="economic">
+                            <label for="economic">Економічні</label> <br>
+                        </fieldset>
 
-                        <h3 id="players_count">Кількість гравців</h3>
-                        <input type="checkbox" name="players" id="1">
-                        <label for="1">1</label> <br>
+                        <fieldset>
+                            <h3 id="players_count">Кількість гравців</h3>
+                            <input type="checkbox" class="player-count" name="players" id="1">
+                            <label for="1">1</label> <br>
 
-                        <input type="checkbox" name="players" id="2">
-                        <label for="2">2</label> <br>
+                            <input type="checkbox" class="player-count" name="players" id="2">
+                            <label for="2">2</label> <br>
 
-                        <input type="checkbox" name="players" id="3">
-                        <label for="3">3</label> <br>
+                            <input type="checkbox" class="player-count" name="players" id="3">
+                            <label for="3">3</label> <br>
 
-                        <input type="checkbox" name="players" id="4">
-                        <label for="4">4</label> <br>
+                            <input type="checkbox" class="player-count" name="players" id="4">
+                            <label for="4">4</label> <br>
 
-                        <input type="checkbox" name="players" id="5plus">
-                        <label for="5plus">5+</label> <br> <br> 
+                            <input type="checkbox" name="players" id="5plus">
+                            <label for="5plus">5+</label> <br> <br> 
+                        </fieldset>
 
                         <button type="submit">Застосувати</button>
                     </form>

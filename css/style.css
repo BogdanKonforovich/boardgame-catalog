@@ -1,39 +1,98 @@
-#chess img {
-    width: 30%;
-    height: auto;
+*, *::before, *::after {
+box-sizing: border-box;
 }
 
-#monopoly img {
-    width: 30%;
-    height: auto;
+body {
+margin: 0;
+font-family: system-ui, sans-serif;
+line-height: 1.5;
+color: #000000;
 }
 
-#fool img {
-    width: 30%;
-    height: auto;
+header {
+    background-color: #7b2cbf;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
 }
 
-#battleship img {
-    width: 30%;
-    height: auto;
+nav a {
+    color: #f2edf3;
+    text-decoration: none;
+    color: #ffd60a;
+    margin-right: 20px;
 }
 
-#backgammon img {
-    width: 30%;
-    height: auto;
+main{
+    max-width: auto;
+    margin: 0px;
+    padding: 0px;
 }
 
-#jenga img {
-    width: 30%;
-    height: auto;
+#filters {
+    padding: 20px;
+    background-color: #1a9e8f;
+} 
+
+fieldset {
+    border: 2px solid #7b2cbf;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f4f1fa;
 }
 
-#alias img {
-    width: 30%;
-    height: auto;
+fieldset h3 {
+    margin: 0;
+    color: #7b2cbf;
 }
 
-#Scrabble img {
-    width: 30%;
-    height: auto;
+button {
+    margin-top: 15px;
+    background-color: #7b2cbf;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    padding: 12px 22px;
+    background-color: #1a9e8f;
+}
+
+#games{
+    padding: 20px;
+    background-color: #e3f702;
+    color: #7b2cbf;
+}
+
+article {
+    background-color: #f4f1fa;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+article h3 {
+    margin: 0;
+    color: #1a9e8f;
+}
+
+article img {
+    height: 250px;
+    width: 250px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 8px rgba(9, 0, 0, 0.7);
+}
+
+article img:hover {
+    box-shadow: 2px 2px 20px rgba(9, 0, 0, 0.7);
+}
+
+footer {
+    background-color: #7b2cbf;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
 }
