@@ -11,6 +11,25 @@ background-color: #c9b6ea;
 color: #000000;
 }
 
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+p, .game-description {
+    font-size: 0.9rem;
+}
+
 header {
     background-color: #7b2cbf;
     color: #fff;
@@ -79,10 +98,13 @@ button {
     padding: 10px 20px;
     border-radius: 8px;
     cursor: pointer;
+    min-width: 44px;
+    min-height: 44px;
 }
 
 button:hover {
     background-color: #1a9e8f;
+    color: #000
 }
 
 #games{
@@ -104,11 +126,33 @@ article {
     background-color: #f4f1fa;
     border-radius: 8px;
     padding: 15px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 400px;
 }
 
+
+/*
+ * Нечітка вимога: "каталог, яким приємно гортати" — грайлива типографіка
+ * заголовків карток проти нейтральної для опису.
+ * Назва гри (h3) зроблена великою, дуже жирною (font-weight: 700) і насиченого
+ * кольору — це одразу привертає увагу при швидкому перегляді каталогу.
+ * Опис гри (.game-description), навпаки, залишений дрібнішим, звичайної ваги
+ * і приглушеного сірого кольору, щоб не конкурувати з назвою за увагу.
+ * Такий контраст створює чітку візуальну ієрархію: спочатку читач переглядає
+ * назву гри поглядом, і лише за бажанням читає деталі — це і робить
+ * перегляд каталогу швидким та приємним.
+ */
 article h3 {
     margin: 0;
-    color: #1a9e8f;
+    color: #7b2cbf;
+}
+
+.game-description {
+    color: #6b6b6b;
+    font-weight: 400;
+    margin: 0 0 10px 0;
 }
 
 article img {
@@ -120,6 +164,17 @@ article img {
     object-fit: cover;
     display: block;
     margin: 10px auto 20px;
+}
+
+.players-badge{
+    background-color: #fdea18;
+    border-radius: 8px;
+    color:#4a4a4a;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 2px 6px;
+    align-self: flex-start;
+    margin-top: auto;
 }
 
 article img:hover {
