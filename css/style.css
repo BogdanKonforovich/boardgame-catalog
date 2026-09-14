@@ -122,7 +122,7 @@ button:hover {
     gap: 20px;
 }
 
-article {
+.game {
     background-color: #f4f1fa;
     border-radius: 8px;
     padding: 15px;
@@ -144,7 +144,7 @@ article {
  * назву гри поглядом, і лише за бажанням читає деталі — це і робить
  * перегляд каталогу швидким та приємним.
  */
-article h3 {
+.game h3 {
     margin: 0;
     color: #7b2cbf;
 }
@@ -155,7 +155,7 @@ article h3 {
     margin: 0 0 10px 0;
 }
 
-article img {
+.game img {
     width: 100%;
     max-width: 250px;
     height: 250px;
@@ -177,7 +177,7 @@ article img {
     margin-top: auto;
 }
 
-article img:hover {
+.game img:hover {
     box-shadow: 4px 4px 20px rgba(134, 46, 212, 0.5);
 }
 
