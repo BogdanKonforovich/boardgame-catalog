@@ -113,10 +113,7 @@ button:hover {
     color: #7b2cbf;
 }
 
-#games ul{
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.games-list{
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
@@ -130,6 +127,12 @@ button:hover {
     display: flex;
     flex-direction: column;
     height: 400px;
+    box-shadow: 4px 4px 15px rgba(123, 44, 191, 0.35);
+    transition: box-shadow 0.2s ease;
+}
+
+.game:hover {
+    box-shadow: 5px 5px 20px rgba(134, 46, 212, 0.5);
 }
 
 
@@ -177,10 +180,6 @@ button:hover {
     margin-top: auto;
 }
 
-.game img:hover {
-    box-shadow: 4px 4px 20px rgba(134, 46, 212, 0.5);
-}
-
 footer {
     background-color: #7b2cbf;
     font-size: 0.875rem;
@@ -211,14 +210,14 @@ footer {
         min-width: 220px;
     }
 
-    #games ul {
+    .games-list {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (min-width: 1024px)
 {
-    #games ul {
+    .games-list {
         grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
     }
 }
