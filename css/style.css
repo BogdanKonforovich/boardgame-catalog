@@ -196,10 +196,6 @@ button:hover {
     margin-top: auto;
 }
 
-.game img:hover {
-    box-shadow: 4px 4px 20px rgba(134, 46, 212, 0.5);
-}
-
 footer {
     background-color: #7b2cbf;
     font-size: 0.875rem;
