@@ -7,7 +7,7 @@ margin: 0;
 font-size: 1rem;
 font-family: system-ui, sans-serif;
 line-height: 1.5;
-background-color: #c9b6ea;
+background-color: #f0e8fa;
 color: #000000;
 }
 
@@ -67,11 +67,22 @@ main > section {
 
 summary {
     cursor: pointer;
+    color: #0d5d54;
+    font-weight: 700;
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background-color: #e6f7f5;
+    margin-bottom: 15px;
+}
+
+summary:hover {
+    background-color: #d0f0ec;
 }
 
 #filters {
     padding: 20px;
-    background-color: #1a9e8f;
+    background-color: #faf8fd;
 } 
 
 #filters form {
@@ -81,10 +92,11 @@ summary {
 }
 
 fieldset {
-    border: 2px solid #7b2cbf;
+    border: none;
+    border-left: 4px solid #1a9e8f;
     padding: 20px;
     border-radius: 8px;
-    background-color: #f4f1fa;
+    background-color: #ffffff;
 }
 
 fieldset h3 {
@@ -109,11 +121,14 @@ button:hover {
 
 #games{
     padding: 20px;
-    background-color: #e3f702;
+    background-color: #faf8fd;
     color: #7b2cbf;
 }
 
 .games-list{
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
@@ -153,9 +168,10 @@ button:hover {
 }
 
 .game-description {
-    color: #6b6b6b;
+    color: #595959;
     font-weight: 400;
     margin: 0 0 10px 0;
+    min-height: 2.7em;
 }
 
 .game img {
