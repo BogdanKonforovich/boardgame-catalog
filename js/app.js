@@ -32,7 +32,7 @@ const gameDetails = {
 
 function renderGames(gamesList)
 {
-    for(var game of gamesList)
+    for(let game of gamesList)
     {
         const card = document.createElement('article');
         card.classList.add('game');
