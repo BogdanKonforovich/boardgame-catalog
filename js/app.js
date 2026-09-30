@@ -1,30 +1,19 @@
-// Масив ігор каталогу: назва та діапазон кількості гравців
+// Масив ігор каталогу: назва та діапазон кількості гравців і жанр
 const games = [
-    { title: 'Шахи', minPlayers: 2, maxPlayers: 2 },
-    { title: 'Монополія', minPlayers: 2, maxPlayers: 6 },
-    { title: 'Дурень', minPlayers: 2, maxPlayers: 6 },
-    { title: 'Морський бій', minPlayers: 2, maxPlayers: 2 },
-    { title: 'Нарди', minPlayers: 2, maxPlayers: 2 },
-    { title: 'Дженга', minPlayers: 2, maxPlayers: 8 },
-    { title: 'Аліас', minPlayers: 4, maxPlayers: 8 },
-    { title: 'Скрабл', minPlayers: 2, maxPlayers: 4 }
+    { title: 'Шахи', minPlayers: 2, maxPlayers: 2, genre: 'strategic', description: 'Класична стратегічна гра для двох', img: 'assets/img/chess.webp' },
+    { title: 'Монополія', minPlayers: 2, maxPlayers: 6, genre: 'economic', description: 'Економічна гра про скупівлю нерухомості', img: 'assets/img/monopoly.jpg' },
+    { title: 'Дурень', minPlayers: 2, maxPlayers: 6, genre: 'card_based', description: 'Популярна карткова гра на удачу й тактику', img: 'assets/img/fool.jpg' },
+    { title: 'Морський бій', minPlayers: 2, maxPlayers: 2, genre: 'logic_puzzles', description: 'Логічна гра на влучність і стратегію', img: 'assets/img/battleship.webp' },
+    { title: 'Нарди', minPlayers: 2, maxPlayers: 2, genre: 'strategic', description: 'Гра на кубиках і стратегічне мислення', img: 'assets/img/backgammon.png' },
+    { title: 'Дженга', minPlayers: 2, maxPlayers: 8, genre: 'games_of_chance', description: 'Гра на спритність і стійку руку', img: 'assets/img/jenga.webp' },
+    { title: 'Аліас', minPlayers: 4, maxPlayers: 8, genre: 'card_based', description: 'Весела командна гра на пояснення слів', img: 'assets/img/alias.jpg' },
+    { title: 'Скрабл', minPlayers: 2, maxPlayers: 4, genre: 'card_based', description: 'Словесна гра на словниковий запас', img: 'assets/img/scrabble.jpg' }
 ];
 
 const listContainer = document.querySelector('#games-list');
 
 const staticCards = document.querySelectorAll('#games-list .game');
 staticCards.forEach(card => card.remove());
-
-const gameDetails = {
-    'Шахи': { description: 'Класична стратегічна гра для двох', img: 'assets/img/chess.webp' },
-    'Монополія': { description: 'Економічна гра про скупівлю нерухомості', img: 'assets/img/monopoly.jpg' },
-    'Дурень': { description: 'Популярна карткова гра на удачу й тактику', img: 'assets/img/fool.jpg' },
-    'Морський бій': { description: 'Логічна гра на влучність і стратегію', img: 'assets/img/battleship.webp' },
-    'Нарди': { description: 'Гра на кубиках і стратегічне мислення', img: 'assets/img/backgammon.png' },
-    'Дженга': { description: 'Гра на спритність і стійку руку', img: 'assets/img/jenga.webp' },
-    'Аліас': { description: 'Весела командна гра на пояснення слів', img: 'assets/img/alias.jpg' },
-    'Скрабл': { description: 'Словесна гра на словниковий запас', img: 'assets/img/scrabble.jpg' }
-};
 
 // Рендерить список карток ігор на основі масиву games,
 // для кожної гри створює article з h3 (назва), p (опис), img (зображення) та span (бейдж гравців),
@@ -39,13 +28,13 @@ function renderGames(gamesList)
 
         const title = document.createElement('h3');
         title.textContent = game.title;
-        
+
         const description = document.createElement('p');
         description.classList.add('game-description');
-        description.textContent = gameDetails[game.title].description;
+        description.textContent = game.description;
 
         const img = document.createElement('img');
-        img.src = gameDetails[game.title].img;
+        img.src = game.img;
         img.alt = game.title;
 
         const badge = document.createElement('span');
@@ -93,3 +82,98 @@ renderGames(games);
 // Оновлюємо підсумковий лічильник кількості ігор
 const gamesCount = document.querySelector('#games-count');
 gamesCount.textContent = 'Усього ігор у каталозі: ' + games.length;
+
+// Обробник надсилання форми додавання нової гри:
+// зчитує значення полів, перевіряє коректність діапазону гравців (minPlayers ≤ maxPlayers),
+// додає нову гру в масив games і перемальовує список карток
+const form = document.querySelector('#game-form');
+form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const title = document.querySelector('#game-title').value.trim();
+    const min = Number(document.querySelector('#game-min-players').value);
+    const max = Number(document.querySelector('#game-max-players').value);
+    const genre = document.querySelector('#game-genre').value;
+    const description = document.querySelector('#game-description').value.trim() || "Опис відсутній";
+    const img = document.querySelector('#game-img').value.trim()
+
+    const newElement = 
+    {
+        title: title,
+        minPlayers: min,
+        maxPlayers: max,
+        genre: genre,
+        description: description,
+        img: img
+    }
+
+    const errorElement = document.querySelector('#game-form-error');
+
+    if(min > max)
+    {
+        errorElement.textContent = 'Мінімальна кількість гравців не може перевищувати максимальну';
+        return;
+    }
+    else
+    {
+        errorElement.textContent = '';
+    }
+
+    listContainer.innerHTML = '';
+    games.push(newElement);
+
+    renderGames(games);
+    gamesCount.textContent = 'Усього ігор у каталозі: ' + games.length;
+    form.reset();
+});
+
+// Обробник надсилання форми фільтрів (кнопка "Застосувати"):
+// збирає позначені чекбокси "Кількість гравців", фільтрує масив games через fitsPlayers
+// і перемальовує список, показуючи лише ігри, що підходять під хоча б одне обране значення
+
+const filtersForm = document.querySelector('#filters-form');
+const playerCountCheckboxes = document.querySelectorAll('.player-count')
+
+filtersForm.addEventListener('submit', (event) =>{
+    event.preventDefault();
+
+    const checkValue = [];
+
+    for(const c of playerCountCheckboxes)
+    {
+        if(c.checked)
+        {
+            if(c.id === '6plus')
+            {
+                checkValue.push(6);
+            }
+            else
+            {
+                checkValue.push(Number(c.id));
+            }
+        }
+    }
+
+    const filterGame = [];
+
+    for(const game of games)
+    {
+        let flag = false;
+        for(const n of checkValue)
+        {
+            if(fitsPlayers(game, n)){
+                flag = true;
+            }
+        }
+
+        if(flag)
+        {
+            filterGame.push(game);
+        }
+    }
+
+    listContainer.innerHTML = '';
+
+    renderGames(filterGame);
+    gamesCount.textContent = 'Усього ігор у каталозі: ' + filterGame.length;
+}) 
