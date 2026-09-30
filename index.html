@@ -22,7 +22,7 @@
                 <details>
                     <summary>Відкрити фільтри</summary>
 
-                    <form>
+                    <form id='filters-form'>
                         <fieldset>
                             <h3 id="categories">Категорії</h3>
                             <input type="checkbox" class="category" name="category" id="all" checked>
@@ -58,8 +58,11 @@
                             <input type="checkbox" class="player-count" name="players" id="4">
                             <label for="4">4</label> <br>
 
-                            <input type="checkbox" name="players" id="5plus">
-                            <label for="5plus">5+</label> <br> <br> 
+                            <input type="checkbox" class="player-count" name="players" id="5">
+                            <label for="5">5</label> <br>
+
+                            <input type="checkbox" class="player-count" name="players" id="6plus">
+                            <label for="6plus">6+</label> <br>
                         </fieldset>
 
                         <button type="submit">Застосувати</button>
@@ -70,6 +73,55 @@
             <section  id="games">
                 <h2>Ігри</h2>
                 <p id="games-count"></p>
+
+                <details>
+                    <summary>Додати гру</summary>
+
+                    <form id="game-form">
+                        <fieldset>
+                            <h3>Дані про гру</h3>
+                            <div>
+                                <label for="game-title">Назва гри</label>
+                                <input type="text" id="game-title" name="title" required>
+                            </div>
+
+                            <div>
+                                <label for="game-min-players">Мінімум гравців</label>
+                                <input type="number" id="game-min-players" name="minPlayers" min="1" max="6" required>
+                            </div>
+
+                            <div>
+                                <label for="game-max-players">Максимум гравців</label>
+                                <input type="number" id="game-max-players" name="maxPlayers" min="1" max="12" required>
+                            </div>
+
+                            <p id="game-form-error" class="form-error"></p>
+
+                            <div>
+                                <label for="game-genre">Жанр</label>
+                                <select id="game-genre" name="genre">
+                                    <option value="strategic">Стратегія</option>
+                                    <option value="logic_puzzles">Логічні головоломки</option>
+                                    <option value="card_based">Карткові</option>
+                                    <option value="games_of_chance">Ігри на удачу</option>
+                                    <option value="economic">Економічні</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="game-description">Опис гри</label>
+                                <input type="text" id="game-description" name="description">
+                            </div>
+
+                            <div>
+                                <label for="game-img">Посилання на зображення</label>
+                                <input type="url" id="game-img" name="img">
+                            </div>
+                        </fieldset>
+
+                        <button type="submit" id = "button-add">Додати гру</button>
+                    </form>
+                </details>
 
                 <div class="games-list" id="games-list">
                     <article id="chess" class="game">
