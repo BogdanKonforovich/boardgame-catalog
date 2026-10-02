@@ -126,7 +126,8 @@ button:hover {
     color: #000
 }
 
-#games{
+#games,
+#todos{
     padding: 20px;
     background-color: #faf8fd;
     color: #7b2cbf;
@@ -167,7 +168,8 @@ button:hover {
     color: #000;
 }
 
-#game-form-error
+#game-form-error,
+#todos-error
 {
     color: red;
 }
