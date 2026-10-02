@@ -19,7 +19,7 @@ staticCards.forEach(card => card.remove());
 // для кожної гри створює article з h3 (назва), p (опис), img (зображення) та span (бейдж гравців),
 // додає атрибут data-players і клас fits (якщо гра підходить для 4 гравців), і вставляє картку в контейнер
 
-function renderGames(gamesList)
+function renderGames(gamesList, container = listContainer)
 {
     for(let game of gamesList)
     {
@@ -32,24 +32,34 @@ function renderGames(gamesList)
         const description = document.createElement('p');
         description.classList.add('game-description');
         description.textContent = game.description;
-
-        const img = document.createElement('img');
-        img.src = game.img;
-        img.alt = game.title;
-
-        const badge = document.createElement('span');
-        badge.classList.add('players-badge');
-        badge.textContent = formatPlayers(game);
         
-        card.dataset.players = game.maxPlayers;
-        if(fitsPlayers(game, 4))
+        card.append(title, description);
+
+        if(game.img)
         {
-            card.classList.add('fits')
+            const img = document.createElement('img');
+            img.src = game.img;
+            img.alt = game.title;
+
+            card.append(img);
         }
 
-        card.append(title, description, img, badge);
+        if(game.maxPlayers)
+        {
+            const badge = document.createElement('span');
+            badge.classList.add('players-badge');
+            badge.textContent = formatPlayers(game);
 
-        listContainer.append(card);
+            card.dataset.players = game.maxPlayers;
+            if(fitsPlayers(game, 4))
+            {
+                card.classList.add('fits')
+            }
+
+            card.append(badge);
+        }
+
+        container.append(card);
     }
 }
 
@@ -177,3 +187,67 @@ filtersForm.addEventListener('submit', (event) =>{
     renderGames(filterGame);
     gamesCount.textContent = 'Усього ігор у каталозі: ' + filterGame.length;
 }) 
+
+
+// loadData() завантажує список зіграних ігор з JSONPlaceholder (мок-дані todos):
+// https://jsonplaceholder.typicode.com/todos?userId=1
+// Показує стан завантаження, перевіряє response.ok, розбирає JSON і виводить картки;
+// у разі помилки показує зрозуміле повідомлення користувачу, а деталі пише в консоль
+
+const API_URL = 'https://jsonplaceholder.typicode.com/todos?userId=1';
+
+async function loadData() {
+
+    const loadingElement = document.querySelector('#todos-loading');
+    const errorElement = document.querySelector('#todos-error');
+    const refreshBtn = document.querySelector('#todos-refresh');
+
+    loadingElement.hidden = false;
+    errorElement.textContent = '';
+    refreshBtn.disabled = true;
+
+    try
+    {
+        const response = await fetch(API_URL);
+        if(!response.ok)
+        {
+            throw new Error('Помилка HTTP: ' + response.status);
+        }
+
+        const data = await response.json();
+        // console.log('Отримані дані з API:', data);
+
+        renderTodos(data);
+    }
+    catch (error)
+    {
+        errorElement.textContent = 'Не вдалося завантажити список зіграних ігор. Спробуйте пізніше.';
+        console.error('Помилка при завантаженні даних:', error);
+    }
+    finally
+    {
+        loadingElement.hidden = true;
+        refreshBtn.disabled = false;
+    }
+}
+
+// Виводить дані з API у секцію "Список зіграних ігор":
+// очищає контейнер #todos-list, перетворює поля todo (title, completed)
+// на об'єкти гри (title, description) і передає їх у renderGames
+function renderTodos(todoList) 
+{
+    const todosContainer = document.querySelector('#todos-list');
+    todosContainer.innerHTML = '';
+
+    const adapted = [];
+    for (const todo of todoList) {
+        adapted.push({
+            title: todo.title,
+            description: todo.completed ? 'Зіграно' : 'Не зіграно'
+        });
+    }
+    renderGames(adapted, todosContainer);
+}
+loadData();
+
+document.querySelector('#todos-refresh').addEventListener('click', loadData);
