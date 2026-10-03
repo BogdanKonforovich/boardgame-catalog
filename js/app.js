@@ -215,7 +215,7 @@ async function loadData() {
         }
 
         const data = await response.json();
-        // console.log('Отримані дані з API:', data);
+        console.log('Отримані дані з API:', data);
 
         renderTodos(data);
     }
@@ -248,6 +248,7 @@ function renderTodos(todoList)
     }
     renderGames(adapted, todosContainer);
 }
+
 loadData();
 
 document.querySelector('#todos-refresh').addEventListener('click', loadData);
