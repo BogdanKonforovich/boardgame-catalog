@@ -1,25 +1,103 @@
-// Масив ігор каталогу: назва та діапазон кількості гравців і жанр
-const games = [
-    { title: 'Шахи', minPlayers: 2, maxPlayers: 2, genre: 'strategic', description: 'Класична стратегічна гра для двох', img: 'assets/img/chess.webp' },
-    { title: 'Монополія', minPlayers: 2, maxPlayers: 6, genre: 'economic', description: 'Економічна гра про скупівлю нерухомості', img: 'assets/img/monopoly.jpg' },
-    { title: 'Дурень', minPlayers: 2, maxPlayers: 6, genre: 'card_based', description: 'Популярна карткова гра на удачу й тактику', img: 'assets/img/fool.jpg' },
-    { title: 'Морський бій', minPlayers: 2, maxPlayers: 2, genre: 'logic_puzzles', description: 'Логічна гра на влучність і стратегію', img: 'assets/img/battleship.webp' },
-    { title: 'Нарди', minPlayers: 2, maxPlayers: 2, genre: 'strategic', description: 'Гра на кубиках і стратегічне мислення', img: 'assets/img/backgammon.png' },
-    { title: 'Дженга', minPlayers: 2, maxPlayers: 8, genre: 'games_of_chance', description: 'Гра на спритність і стійку руку', img: 'assets/img/jenga.webp' },
-    { title: 'Аліас', minPlayers: 4, maxPlayers: 8, genre: 'card_based', description: 'Весела командна гра на пояснення слів', img: 'assets/img/alias.jpg' },
-    { title: 'Скрабл', minPlayers: 2, maxPlayers: 4, genre: 'card_based', description: 'Словесна гра на словниковий запас', img: 'assets/img/scrabble.jpg' }
-];
+// Обрано Vue 3 (підключення через CDN, без збірки/Node.js).
+// Причина: шаблони Vue (v-for, @click) схожі на звичайний HTML і легші для розуміння
+// на старті, ніж JSX у React — не треба вчити новий синтаксис усередині JS.
+const genreLabels = {
+    strategic: 'Стратегія',
+    logic_puzzles: 'Логічні головоломки',
+    card_based: 'Карткові',
+    games_of_chance: 'Ігри на удачу',
+    economic: 'Економічні'
+};
 
-const listContainer = document.querySelector('#games-list');
+const GameCard = 
+{
+    props: ['title', 'description', 'minPlayers', 'maxPlayers', 'genreLabel', 'genre', 'img'],
+    emits: ['filter'],
+    computed: {
+        playersText() {
+            if (this.minPlayers === this.maxPlayers) 
+                {
+                return `${this.minPlayers} гравці`;
+            }
+            return `${this.minPlayers}–${this.maxPlayers} гравців`;
+        }
+    },
+    template: `
+        <article class="game">
+            <h3>{{ title }}</h3>
+            <p class="game-description">{{ description }}</p>
+            <img :src="img" :alt="title">
+            <div class="badges">
+                <span class="players-badge">{{ playersText }}</span>
+                <span class="players-badge genre-badge" @click="$emit('filter', genre)">
+                    {{ genreLabel }}
+                </span>
+            </div>
+        </article>
+    `
+}
 
-const staticCards = document.querySelectorAll('#games-list .game');
-staticCards.forEach(card => card.remove());
 
-// Рендерить список карток ігор на основі масиву games,
-// для кожної гри створює article з h3 (назва), p (опис), img (зображення) та span (бейдж гравців),
-// додає атрибут data-players і клас fits (якщо гра підходить для 4 гравців), і вставляє картку в контейнер
+const {createApp} = Vue;
 
-function renderGames(gamesList, container = listContainer)
+const vueApp = createApp({
+    components: {GameCard},
+    data() {
+        return {
+        genreLabels,
+        vueGames: [
+            { id: 1, title: 'Шахи', description: 'Класична стратегічна гра для двох', minPlayers: 2, maxPlayers: 2, genre: 'strategic', img: 'assets/img/chess.webp' },
+            { id: 2, title: 'Монополія', description: 'Економічна гра про скупівлю нерухомості', minPlayers: 2, maxPlayers: 6, genre: 'economic', img: 'assets/img/monopoly.jpg' },
+            { id: 3, title: 'Дурень', description: 'Популярна карткова гра на удачу й тактику', minPlayers: 2, maxPlayers: 6, genre: 'card_based', img: 'assets/img/fool.jpg' },
+            { id: 4, title: 'Морський бій', description: 'Логічна гра на влучність і стратегію', minPlayers: 2, maxPlayers: 2, genre: 'logic_puzzles', img: 'assets/img/battleship.webp' },
+            { id: 5, title: 'Нарди', description: 'Гра на кубиках і стратегічне мислення', minPlayers: 2, maxPlayers: 2, genre: 'strategic', img: 'assets/img/backgammon.png' },
+            { id: 6, title: 'Дженга', description: 'Гра на спритність і стійку руку', minPlayers: 2, maxPlayers: 8, genre: 'logic_puzzles', img: 'assets/img/jenga.webp' },
+            { id: 7, title: 'Аліас', description: 'Весела командна гра на пояснення слів', minPlayers: 4, maxPlayers: 8, genre: 'strategic', img: 'assets/img/alias.jpg' },
+            { id: 8, title: 'Скрабл', description: 'Словесна гра на словниковий запас', minPlayers: 2, maxPlayers: 4, genre: 'logic_puzzles', img: 'assets/img/scrabble.jpg' }
+        ],
+            activeGenre: null,
+            checkedPlayers: []
+        }
+    },
+    computed: 
+    {
+        filteredGames() 
+        {
+            let result = this.vueGames;
+
+            if (this.activeGenre) {
+                result = result.filter(g => g.genre === this.activeGenre);
+            }
+
+            if (this.checkedPlayers.length > 0) {
+                result = result.filter(game =>
+                    this.checkedPlayers.some(n => n >= game.minPlayers && n <= game.maxPlayers)
+                );
+            }
+
+            return result;
+        }
+    },
+    methods: {
+        filterByGenre(genre) {
+            this.activeGenre = genre;
+        },
+        clearFilter() {
+            this.activeGenre = null;
+        },
+        setPlayersFilter(values) {
+            this.checkedPlayers = values;
+        }
+    }
+}).mount('#vue-app');
+
+
+// Рендерить список карток для блоку "Зіграні ігри" (дані з API, практикум 9):
+// для кожного запису створює article з h3 (назва) і p (опис/статус), вставляє в контейнер.
+// Примітка (практикум 10): renderGames лишається лише для цього блоку API;
+// основний каталог ігор тепер повністю рендерить Vue-компонент GameCard (v-for, без querySelector/innerHTML)
+
+function renderGames(gamesList, container)
 {
     for(let game of gamesList)
     {
@@ -34,68 +112,13 @@ function renderGames(gamesList, container = listContainer)
         description.textContent = game.description;
         
         card.append(title, description);
-
-        if(game.img)
-        {
-            const img = document.createElement('img');
-            img.src = game.img;
-            img.alt = game.title;
-
-            card.append(img);
-        }
-
-        if(game.maxPlayers)
-        {
-            const badge = document.createElement('span');
-            badge.classList.add('players-badge');
-            badge.textContent = formatPlayers(game);
-
-            card.dataset.players = game.maxPlayers;
-            if(fitsPlayers(game, 4))
-            {
-                card.classList.add('fits')
-            }
-
-            card.append(badge);
-        }
-
         container.append(card);
     }
 }
 
-function formatPlayers(game) {
-    if (game.minPlayers === game.maxPlayers) {
-        return game.minPlayers + ' гравці';
-    } else {
-        return game.minPlayers + '-' + game.maxPlayers + ' гравців';
-    }
-}
-
-// Виводить у консоль назви ігор, які підходять для заданої кількості гравців
-function printGamesForPlayers(gamesList, playerCount)
-{
-    console.log(`Для ${playerCount} гравців підходять такі ігри:`)
-    for(const game of gamesList)
-    {
-        if(playerCount >= game.minPlayers && playerCount <= game.maxPlayers)
-        {
-            console.log(game.title);
-        }
-    }
-}
-
-// Перевіряє, чи задана кількість гравців підходить для конкретної гри
-const fitsPlayers = (game, n) => n >= game.minPlayers && n <= game.maxPlayers;
-
-renderGames(games);
-
-// Оновлюємо підсумковий лічильник кількості ігор
-const gamesCount = document.querySelector('#games-count');
-gamesCount.textContent = 'Усього ігор у каталозі: ' + games.length;
-
-// Обробник надсилання форми додавання нової гри:
-// зчитує значення полів, перевіряє коректність діапазону гравців (minPlayers ≤ maxPlayers),
-// додає нову гру в масив games і перемальовує список карток
+// Обробник форми додавання нової гри:
+// зчитує поля, перевіряє, що minPlayers ≤ maxPlayers, і додає гру в реактивний
+// масив vueGames; Vue сам перемальовує каталог (ручний рендер не потрібен)
 const form = document.querySelector('#game-form');
 form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -128,21 +151,49 @@ form.addEventListener('submit', (event) => {
     {
         errorElement.textContent = '';
     }
+    
+    vueApp.vueGames.push({
+    id: vueApp.vueGames.length + 1,
+    title: newElement.title,
+    minPlayers: newElement.minPlayers,
+    maxPlayers: newElement.maxPlayers,
+    description: newElement.description,
+    genre: newElement.genre,
+    img: newElement.img || 'assets/img/placeholder.jpg'
+    });
 
-    listContainer.innerHTML = '';
-    games.push(newElement);
-
-    renderGames(games);
-    gamesCount.textContent = 'Усього ігор у каталозі: ' + games.length;
     form.reset();
 });
 
-// Обробник надсилання форми фільтрів (кнопка "Застосувати"):
-// збирає позначені чекбокси "Кількість гравців", фільтрує масив games через fitsPlayers
-// і перемальовує список, показуючи лише ігри, що підходять під хоча б одне обране значення
+// Обробник форми фільтрів (кнопка "Застосувати"):
+// збирає позначені чекбокси "Кількість гравців" і передає їх у Vue через
+// setPlayersFilter; обчислюване значення filteredGames перераховується само
 
 const filtersForm = document.querySelector('#filters-form');
+const playerAll = document.querySelector('#player-all');
 const playerCountCheckboxes = document.querySelectorAll('.player-count')
+
+const anyPlayerChecked = () => [...playerCountCheckboxes].some(c => c.checked);
+
+playerAll.addEventListener('change', () => {
+    if (playerAll.checked) {
+        playerCountCheckboxes.forEach(c => c.checked = false);
+    } else if (!anyPlayerChecked()) {
+        playerAll.checked = true;
+    }
+});
+
+playerCountCheckboxes.forEach(c => {
+
+    c.addEventListener('change', () => {
+        
+        if (c.checked) {
+            playerAll.checked = false;
+        } else if (!anyPlayerChecked()) {
+            playerAll.checked = true;
+        }
+    });
+});
 
 filtersForm.addEventListener('submit', (event) =>{
     event.preventDefault();
@@ -151,41 +202,22 @@ filtersForm.addEventListener('submit', (event) =>{
 
     for(const c of playerCountCheckboxes)
     {
-        if(c.checked)
-        {
-            if(c.id === '6plus')
+        if(!playerAll.checked){
+            if(c.checked)
             {
-                checkValue.push(6);
-            }
-            else
-            {
-                checkValue.push(Number(c.id));
+                if(c.id === '6plus')
+                {
+                    checkValue.push(6);
+                }
+                else
+                {
+                    checkValue.push(Number(c.id));
+                }
             }
         }
     }
 
-    const filterGame = [];
-
-    for(const game of games)
-    {
-        let flag = false;
-        for(const n of checkValue)
-        {
-            if(fitsPlayers(game, n)){
-                flag = true;
-            }
-        }
-
-        if(flag)
-        {
-            filterGame.push(game);
-        }
-    }
-
-    listContainer.innerHTML = '';
-
-    renderGames(filterGame);
-    gamesCount.textContent = 'Усього ігор у каталозі: ' + filterGame.length;
+    vueApp.setPlayersFilter(checkValue);
 }) 
 
 
