@@ -127,7 +127,7 @@ button:hover {
 }
 
 #games,
-#todos{
+#todos {
     padding: 20px;
     background-color: #faf8fd;
     color: #7b2cbf;
@@ -237,6 +237,20 @@ button:hover {
     padding: 2px 6px;
     align-self: flex-start;
     margin-top: auto;
+}
+
+.badges {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.badges .players-badge {
+    margin-top: 0;
+}
+
+.genre-badge {
+    cursor: pointer;
 }
 
 footer {
