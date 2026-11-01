@@ -1,3 +1,124 @@
+///11///
+
+const STORAGE_KEY = 'games';
+
+function saveToLocalStorage(items){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+
+function loadFromLocalStorage(){
+    try{
+        const data = localStorage.getItem(STORAGE_KEY);
+        if(data)
+        {
+            return JSON.parse(data);
+        }
+        return [];
+    }
+    catch (error) {
+        console.error('Помилка при завантаженні даних з localStorage:', error);
+        return [];
+    }
+}
+
+// Схема: база BoardGamesDB, версія 1, один object store "games" з ключем id
+const DB_NAME = 'BoardGamesDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'games';
+
+// Відкриває базу даних. При першому запуску створює сховище games з ключем id
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// Додає нову гру або оновлює наявну з тим самим id (put)
+async function addItem(item){
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).put({ ...item });
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+// Видаляє гру за id
+async function deleteItem(item){
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).delete(item.id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+// Повертає масив усіх ігор зі сховища
+async function getAllItems(){
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const request = tx.objectStore(STORE_NAME).getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+const MIGRATED_KEY = 'migrated';
+
+async function migrateFromLocalStorage() {
+    if (localStorage.getItem(MIGRATED_KEY) === 'true') {
+        return;
+    }
+
+    const existing = await getAllItems();
+    const raw = localStorage.getItem(STORAGE_KEY);
+
+    if (existing.length === 0) {
+        const source = raw !== null ? loadFromLocalStorage() : defaultGames;
+        for (const game of source) {
+            await addItem(game);
+        }
+        console.log(`Ініціалізація: записано ${source.length} ігор в IndexedDB`);
+    }
+
+    localStorage.setItem(MIGRATED_KEY, 'true');
+}
+
+const defaultGames = [
+    { id: 1, title: 'Шахи', description: 'Класична стратегічна гра для двох', minPlayers: 2, maxPlayers: 2, genre: 'strategic', img: 'assets/img/chess.webp', played: false },
+    { id: 2, title: 'Монополія', description: 'Економічна гра про скупівлю нерухомості', minPlayers: 2, maxPlayers: 6, genre: 'economic', img: 'assets/img/monopoly.jpg', played: false },
+    { id: 3, title: 'Дурень', description: 'Популярна карткова гра на удачу й тактику', minPlayers: 2, maxPlayers: 6, genre: 'card_based', img: 'assets/img/fool.jpg', played: false },
+    { id: 4, title: 'Морський бій', description: 'Логічна гра на влучність і стратегію', minPlayers: 2, maxPlayers: 2, genre: 'logic_puzzles', img: 'assets/img/battleship.webp', played: false },
+    { id: 5, title: 'Нарди', description: 'Гра на кубиках і стратегічне мислення', minPlayers: 2, maxPlayers: 2, genre: 'strategic', img: 'assets/img/backgammon.png', played: false },
+    { id: 6, title: 'Дженга', description: 'Гра на спритність і стійку руку', minPlayers: 2, maxPlayers: 8, genre: 'logic_puzzles', img: 'assets/img/jenga.webp', played: false },
+    { id: 7, title: 'Аліас', description: 'Весела командна гра на пояснення слів', minPlayers: 4, maxPlayers: 8, genre: 'strategic', img: 'assets/img/alias.jpg', played: false },
+    { id: 8, title: 'Скрабл', description: 'Словесна гра на словниковий запас', minPlayers: 2, maxPlayers: 4, genre: 'logic_puzzles', img: 'assets/img/scrabble.jpg', played: false },
+];
+
+function getInitialGames(){
+    const saved = loadFromLocalStorage();
+    if(saved.length > 0)
+    {
+        return saved;
+    }
+
+    return structuredClone(defaultGames);
+}
+
+
 // Обрано Vue 3 (підключення через CDN, без збірки/Node.js).
 // Причина: шаблони Vue (v-for, @click) схожі на звичайний HTML і легші для розуміння
 // на старті, ніж JSX у React — не треба вчити новий синтаксис усередині JS.
@@ -11,8 +132,8 @@ const genreLabels = {
 
 const GameCard = 
 {
-    props: ['title', 'description', 'minPlayers', 'maxPlayers', 'genreLabel', 'genre', 'img'],
-    emits: ['filter'],
+    props: ['gameId', 'title', 'description', 'minPlayers', 'maxPlayers', 'genreLabel', 'genre', 'img', 'played'],
+    emits: ['filter', 'toggle-played'],
     computed: {
         playersText() {
             if (this.minPlayers === this.maxPlayers) 
@@ -27,6 +148,10 @@ const GameCard =
             <h3>{{ title }}</h3>
             <p class="game-description">{{ description }}</p>
             <img :src="img" :alt="title">
+            <label>
+                <input type="checkbox" :checked="played" @change="$emit('toggle-played', gameId)">
+                Зіграно
+            </label>
             <div class="badges">
                 <span class="players-badge">{{ playersText }}</span>
                 <span class="players-badge genre-badge" @click="$emit('filter', genre)">
@@ -45,19 +170,20 @@ const vueApp = createApp({
     data() {
         return {
         genreLabels,
-        vueGames: [
-            { id: 1, title: 'Шахи', description: 'Класична стратегічна гра для двох', minPlayers: 2, maxPlayers: 2, genre: 'strategic', img: 'assets/img/chess.webp' },
-            { id: 2, title: 'Монополія', description: 'Економічна гра про скупівлю нерухомості', minPlayers: 2, maxPlayers: 6, genre: 'economic', img: 'assets/img/monopoly.jpg' },
-            { id: 3, title: 'Дурень', description: 'Популярна карткова гра на удачу й тактику', minPlayers: 2, maxPlayers: 6, genre: 'card_based', img: 'assets/img/fool.jpg' },
-            { id: 4, title: 'Морський бій', description: 'Логічна гра на влучність і стратегію', minPlayers: 2, maxPlayers: 2, genre: 'logic_puzzles', img: 'assets/img/battleship.webp' },
-            { id: 5, title: 'Нарди', description: 'Гра на кубиках і стратегічне мислення', minPlayers: 2, maxPlayers: 2, genre: 'strategic', img: 'assets/img/backgammon.png' },
-            { id: 6, title: 'Дженга', description: 'Гра на спритність і стійку руку', minPlayers: 2, maxPlayers: 8, genre: 'logic_puzzles', img: 'assets/img/jenga.webp' },
-            { id: 7, title: 'Аліас', description: 'Весела командна гра на пояснення слів', minPlayers: 4, maxPlayers: 8, genre: 'strategic', img: 'assets/img/alias.jpg' },
-            { id: 8, title: 'Скрабл', description: 'Словесна гра на словниковий запас', minPlayers: 2, maxPlayers: 4, genre: 'logic_puzzles', img: 'assets/img/scrabble.jpg' }
-        ],
-            activeGenre: null,
-            checkedPlayers: []
+        vueGames: [],
+        dbError: '',
+        activeGenre: null,
+        checkedPlayers: []
         }
+    },
+    async mounted() {
+    try {
+        await migrateFromLocalStorage();
+        this.vueGames = await getAllItems();
+    } catch (error) {
+        console.error('IndexedDB недоступна:', error);
+        this.dbError = 'Не вдалося відкрити базу даних. Зміни не будуть збережені.';
+    }
     },
     computed: 
     {
@@ -87,6 +213,18 @@ const vueApp = createApp({
         },
         setPlayersFilter(values) {
             this.checkedPlayers = values;
+        },
+        async togglePlayed(id){
+            const game = this.vueGames.find(g => g.id === id);
+            if (!game) return;
+            game.played = !game.played;
+            try {
+                await addItem(game);
+            } catch (error) {
+                game.played = !game.played;
+                console.error('Помилка збереження:', error);
+                this.dbError = 'Не вдалося зберегти зміни.';
+            }
         }
     }
 }).mount('#vue-app');
@@ -120,7 +258,7 @@ function renderGames(gamesList, container)
 // зчитує поля, перевіряє, що minPlayers ≤ maxPlayers, і додає гру в реактивний
 // масив vueGames; Vue сам перемальовує каталог (ручний рендер не потрібен)
 const form = document.querySelector('#game-form');
-form.addEventListener('submit', (event) => {
+form.addEventListener('submit', async  (event) => {
     event.preventDefault();
 
     const title = document.querySelector('#game-title').value.trim();
@@ -152,17 +290,27 @@ form.addEventListener('submit', (event) => {
         errorElement.textContent = '';
     }
     
-    vueApp.vueGames.push({
-    id: vueApp.vueGames.length + 1,
-    title: newElement.title,
-    minPlayers: newElement.minPlayers,
-    maxPlayers: newElement.maxPlayers,
-    description: newElement.description,
-    genre: newElement.genre,
-    img: newElement.img || 'assets/img/placeholder.jpg'
-    });
+    const newId = Math.max(0, ...vueApp.vueGames.map(g => g.id));
 
-    form.reset();
+    const newGame = {
+        id: newId + 1,
+        title: newElement.title,
+        minPlayers: newElement.minPlayers,
+        maxPlayers: newElement.maxPlayers,
+        description: newElement.description,
+        genre: newElement.genre,
+        img: newElement.img || 'assets/img/placeholder.jpg',
+        played: false
+    };
+
+    try {
+        await addItem(newGame);
+        vueApp.vueGames.push(newGame);
+        form.reset();
+    } catch (error) {
+        console.error('Помилка збереження:', error);
+        vueApp.dbError = 'Не вдалося зберегти гру.';
+    }
 });
 
 // Обробник форми фільтрів (кнопка "Застосувати"):
