@@ -78,6 +78,9 @@ async function getAllItems(){
 
 const MIGRATED_KEY = 'migrated';
 
+// Одноразова ініціалізація IndexedDB: якщо прапорця migrated ще немає і сховище порожнє,
+// переносить ігри з localStorage (або записує початковий набір defaultGames),
+// після чого ставить прапорець, щоб не повторювати це при наступних запусках
 async function migrateFromLocalStorage() {
     if (localStorage.getItem(MIGRATED_KEY) === 'true') {
         return;
