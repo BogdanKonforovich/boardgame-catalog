@@ -294,3 +294,41 @@ footer {
         grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
     }
 }
+
+.game {
+    position: relative;
+}
+
+/* Гра дня: жовта рамка пульсує (масштаб + прозорість) */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.03); opacity: 0.4; }
+}
+
+.game--day::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 3px solid #fdea18;
+    border-radius: 12px;
+    pointer-events: none;
+    animation: pulse 1.6s ease-in-out infinite;
+}
+
+.day-badge {
+    position: absolute;
+    top: -12px;
+    right: 12px;
+    background-color: #fdea18;
+    color: #7b2cbf;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+}
+
+/* Крок 8: коли користувач наводить курсор на картку, пульсація ставиться на паузу,
+   щоб рамка не відволікала під час читання або кліку по картці */
+.game--day:hover::after {
+    animation-play-state: paused;
+}
