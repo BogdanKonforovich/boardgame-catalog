@@ -133,7 +133,7 @@
                         Фільтр за жанром: {{ genreLabels[activeGenre] }} <br>
                         <button @click="clearFilter">Скинути фільтр</button>
                     </p>
-                    <div class="games-list">
+                    <transition-group name="game-fade" tag="div" class="games-list">
                         <game-card
                             v-for="game in filteredGames"
                             :key="game.id"
@@ -151,7 +151,7 @@
                             @toggle-played="togglePlayed"
                         ></game-card>
 
-                    </div>
+                    </transition-group>
                 </div>
             </section>
 
