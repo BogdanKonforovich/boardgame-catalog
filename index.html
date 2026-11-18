@@ -146,6 +146,7 @@
                             :genre="game.genre"
                             :img="game.img"
                             :played="game.played"
+                            :is-day="game.id === gameOfDayId"
                             @filter="filterByGenre"
                             @toggle-played="togglePlayed"
                         ></game-card>
