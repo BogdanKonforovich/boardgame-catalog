@@ -332,3 +332,17 @@ footer {
 .game--day:hover::after {
     animation-play-state: paused;
 }
+
+/* Плавна поява карток і зсув решти при застосуванні фільтра */
+.game-fade-enter-active {
+    transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.2s ease;
+}
+
+.game-fade-enter-from {
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+.game-fade-move {
+    transition: transform 0.3s ease;
+}
