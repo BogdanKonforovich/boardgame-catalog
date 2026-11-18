@@ -135,7 +135,7 @@ const genreLabels = {
 
 const GameCard = 
 {
-    props: ['gameId', 'title', 'description', 'minPlayers', 'maxPlayers', 'genreLabel', 'genre', 'img', 'played'],
+    props: ['gameId', 'title', 'description', 'minPlayers', 'maxPlayers', 'genreLabel', 'genre', 'img', 'played', 'isDay'],
     emits: ['filter', 'toggle-played'],
     computed: {
         playersText() {
@@ -147,7 +147,8 @@ const GameCard =
         }
     },
     template: `
-        <article class="game">
+        <article class="game" :class="{ 'game--day': isDay }">
+            <span v-if="isDay" class="day-badge">Гра дня</span>
             <h3>{{ title }}</h3>
             <p class="game-description">{{ description }}</p>
             <img :src="img" :alt="title">
@@ -205,6 +206,15 @@ const vueApp = createApp({
             }
 
             return result;
+        },
+        // "Гра дня": береться з масиву ігор за номером дня в році, тому протягом доби
+        // підсвічується одна й та сама гра, а наступного дня — наступна
+        gameOfDayId() {
+            if (this.vueGames.length === 0) return null;
+            const now = new Date();
+            const dayNumber = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+            const sorted = [...this.vueGames].sort((a, b) => a.id - b.id);
+            return sorted[dayNumber % sorted.length].id;
         }
     },
     methods: {
