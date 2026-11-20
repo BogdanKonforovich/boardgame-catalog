@@ -12,12 +12,11 @@
         <header>
             <h1>Каталог настільних ігор</h1>
             <nav>
-                <a href="#categories">Категорії</a>
-                <a href="#players_count">Кількість гравців</a>
-                <a href="#games">Список ігор</a>
+                <a href="#/" data-link>Усі ігри</a>
+                <a href="#/owned" data-link>У колекції</a>
             </nav>
         </header>
-        <main>
+        <main id="app">
             <section id="filters">
                 <h2>Фільтри</h2>
                 <details>
@@ -126,33 +125,61 @@
                     </form>
                 </details>
 
-                <div id="vue-app">
-                    <p>Усього ігор у каталозі: {{ filteredGames.length }}</p>
-                    <p v-if="dbError" class="form-error">{{ dbError }}</p>
+            <div id="vue-app">
+                <p v-if="dbError" class="form-error">{{ dbError }}</p>
+
+                <section v-if="page === 'detail'" class="game-detail">
+                    <p><a href="#/" data-link>← До каталогу</a></p>
+
+                    <template v-if="selectedGame">
+                        <h2>{{ selectedGame.title }}</h2>
+                        <img :src="selectedGame.img" :alt="selectedGame.title">
+                        <p>{{ selectedGame.description }}</p>
+                        <ul>
+                            <li>Гравців: {{ playersLabel(selectedGame) }}</li>
+                            <li>Тривалість: {{ selectedGame.duration ? selectedGame.duration + ' хв' : '—' }}</li>
+                            <li>Жанр: {{ genreLabels[selectedGame.genre] }}</li>
+                            <li>Зіграно: {{ selectedGame.played ? 'так' : 'ні' }}</li>
+                            <li>У колекції: {{ selectedGame.owned ? 'так' : 'ні' }}</li>
+                        </ul>
+                    </template>
+                    <p v-else-if="!loaded">Завантаження...</p>
+                    <p v-else>Гру з таким номером не знайдено.</p>
+                </section>
+                <section v-if="page === 'notfound'" class="not-found">
+                    <h2>Сторінку не знайдено</h2>
+                    <p>Такого маршруту не існує.</p>
+                    <p><a href="#/" data-link>← На головну</a></p>
+                </section>
+
+                <template v-if="page === 'home' || page === 'owned'">
+                    <p>Усього ігор у каталозі: {{ visibleGames.length }}</p>
                     <p v-if="activeGenre">
                         Фільтр за жанром: {{ genreLabels[activeGenre] }} <br>
                         <button @click="clearFilter">Скинути фільтр</button>
                     </p>
                     <transition-group name="game-fade" tag="div" class="games-list">
                         <game-card
-                            v-for="game in filteredGames"
+                            v-for="game in visibleGames"
                             :key="game.id"
                             :game-id="game.id"
                             :title="game.title"
                             :description="game.description"
                             :min-players="game.minPlayers"
                             :max-players="game.maxPlayers"
-                            :genre-label="genreLabels[game.genre]"
                             :genre="game.genre"
+                            :genre-label="genreLabels[game.genre]"
                             :img="game.img"
                             :played="game.played"
+                            :owned="game.owned"
                             :is-day="game.id === gameOfDayId"
                             @filter="filterByGenre"
                             @toggle-played="togglePlayed"
-                        ></game-card>
-
+                            @toggle-owned="toggleOwned">
+                        </game-card>
                     </transition-group>
-                </div>
+                </template>
+            </div>
             </section>
 
             <section id="todos">
