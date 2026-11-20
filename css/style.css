@@ -210,6 +210,15 @@ button:hover {
     color: #7b2cbf;
 }
 
+.game h3 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.game h3 a:hover {
+    text-decoration: underline;
+}
+
 .game-description {
     color: #595959;
     font-weight: 400;
@@ -345,4 +354,22 @@ footer {
 
 .game-fade-move {
     transition: transform 0.3s ease;
+}
+
+/* На сторінці деталей і «не знайдено» ховаємо фільтри, форму додавання й блок API */
+body[data-page="detail"] #filters,
+body[data-page="detail"] #games > details,
+body[data-page="detail"] #todos,
+body[data-page="notfound"] #filters,
+body[data-page="notfound"] #games > details,
+body[data-page="notfound"] #todos {
+    display: none;
+}
+
+.game-detail img {
+    width: 100%;
+    max-width: 320px;
+    border-radius: 8px;
+    display: block;
+    margin: 10px 0;
 }
