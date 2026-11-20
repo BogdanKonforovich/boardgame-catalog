@@ -101,14 +101,14 @@ async function migrateFromLocalStorage() {
 }
 
 const defaultGames = [
-    { id: 1, title: 'Шахи', description: 'Класична стратегічна гра для двох', minPlayers: 2, maxPlayers: 2, genre: 'strategic', img: 'assets/img/chess.webp', played: false },
-    { id: 2, title: 'Монополія', description: 'Економічна гра про скупівлю нерухомості', minPlayers: 2, maxPlayers: 6, genre: 'economic', img: 'assets/img/monopoly.jpg', played: false },
-    { id: 3, title: 'Дурень', description: 'Популярна карткова гра на удачу й тактику', minPlayers: 2, maxPlayers: 6, genre: 'card_based', img: 'assets/img/fool.jpg', played: false },
-    { id: 4, title: 'Морський бій', description: 'Логічна гра на влучність і стратегію', minPlayers: 2, maxPlayers: 2, genre: 'logic_puzzles', img: 'assets/img/battleship.webp', played: false },
-    { id: 5, title: 'Нарди', description: 'Гра на кубиках і стратегічне мислення', minPlayers: 2, maxPlayers: 2, genre: 'strategic', img: 'assets/img/backgammon.png', played: false },
-    { id: 6, title: 'Дженга', description: 'Гра на спритність і стійку руку', minPlayers: 2, maxPlayers: 8, genre: 'logic_puzzles', img: 'assets/img/jenga.webp', played: false },
-    { id: 7, title: 'Аліас', description: 'Весела командна гра на пояснення слів', minPlayers: 4, maxPlayers: 8, genre: 'strategic', img: 'assets/img/alias.jpg', played: false },
-    { id: 8, title: 'Скрабл', description: 'Словесна гра на словниковий запас', minPlayers: 2, maxPlayers: 4, genre: 'logic_puzzles', img: 'assets/img/scrabble.jpg', played: false },
+    { id: 1, title: 'Шахи', description: 'Класична стратегічна гра для двох', minPlayers: 2, maxPlayers: 2, genre: 'strategic', img: 'assets/img/chess.webp', played: false, duration: 60, owned: true},
+    { id: 2, title: 'Монополія', description: 'Економічна гра про скупівлю нерухомості', minPlayers: 2, maxPlayers: 6, genre: 'economic', img: 'assets/img/monopoly.jpg', played: false, duration: 120, owned: false},
+    { id: 3, title: 'Дурень', description: 'Популярна карткова гра на удачу й тактику', minPlayers: 2, maxPlayers: 6, genre: 'card_based', img: 'assets/img/fool.jpg', played: false, duration: 30, owned: false },
+    { id: 4, title: 'Морський бій', description: 'Логічна гра на влучність і стратегію', minPlayers: 2, maxPlayers: 2, genre: 'logic_puzzles', img: 'assets/img/battleship.webp', played: false, duration: 20, owned: false },
+    { id: 5, title: 'Нарди', description: 'Гра на кубиках і стратегічне мислення', minPlayers: 2, maxPlayers: 2, genre: 'strategic', img: 'assets/img/backgammon.png', played: false, duration: 45, owned: true },
+    { id: 6, title: 'Дженга', description: 'Гра на спритність і стійку руку', minPlayers: 2, maxPlayers: 8, genre: 'logic_puzzles', img: 'assets/img/jenga.webp', played: false, duration: 15, owned: false },
+    { id: 7, title: 'Аліас', description: 'Весела командна гра на пояснення слів', minPlayers: 4, maxPlayers: 8, genre: 'strategic', img: 'assets/img/alias.jpg', played: false, duration: 45, owned: true },
+    { id: 8, title: 'Скрабл', description: 'Словесна гра на словниковий запас', minPlayers: 2, maxPlayers: 4, genre: 'logic_puzzles', img: 'assets/img/scrabble.jpg', played: false, duration: 60, owned: false },
 ];
 
 function getInitialGames(){
@@ -135,8 +135,8 @@ const genreLabels = {
 
 const GameCard = 
 {
-    props: ['gameId', 'title', 'description', 'minPlayers', 'maxPlayers', 'genreLabel', 'genre', 'img', 'played', 'isDay'],
-    emits: ['filter', 'toggle-played'],
+    props: ['gameId', 'title', 'description', 'minPlayers', 'maxPlayers', 'genreLabel', 'genre', 'img', 'played', 'owned', 'isDay'],
+    emits: ['filter', 'toggle-played', 'toggle-owned'],
     computed: {
         playersText() {
             if (this.minPlayers === this.maxPlayers) 
@@ -149,12 +149,16 @@ const GameCard =
     template: `
         <article class="game" :class="{ 'game--day': isDay }">
             <span v-if="isDay" class="day-badge">Гра дня</span>
-            <h3>{{ title }}</h3>
+            <h3><a :href="'#/games/' + gameId" data-link>{{ title }}</a></h3>
             <p class="game-description">{{ description }}</p>
             <img :src="img" :alt="title">
             <label>
                 <input type="checkbox" :checked="played" @change="$emit('toggle-played', gameId)">
                 Зіграно
+            </label>
+            <label>
+                <input type="checkbox" :checked="owned" @change="$emit('toggle-owned', gameId)">
+                У колекції
             </label>
             <div class="badges">
                 <span class="players-badge">{{ playersText }}</span>
@@ -177,17 +181,22 @@ const vueApp = createApp({
         vueGames: [],
         dbError: '',
         activeGenre: null,
-        checkedPlayers: []
+        checkedPlayers: [],
+        page: 'home',      // 'home' | 'detail' | 'owned' | 'notfound'
+        selectedId: null,
+        loaded: false
         }
     },
     async mounted() {
-    try {
-        await migrateFromLocalStorage();
-        this.vueGames = await getAllItems();
-    } catch (error) {
-        console.error('IndexedDB недоступна:', error);
-        this.dbError = 'Не вдалося відкрити базу даних. Зміни не будуть збережені.';
-    }
+        try {
+            await migrateFromLocalStorage();
+            this.vueGames = await getAllItems();
+        } catch (error) {
+            console.error('IndexedDB недоступна:', error);
+            this.dbError = 'Не вдалося відкрити базу даних. Зміни не будуть збережені.';
+        } finally {
+            this.loaded = true;
+        }
     },
     computed: 
     {
@@ -215,6 +224,16 @@ const vueApp = createApp({
             const dayNumber = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
             const sorted = [...this.vueGames].sort((a, b) => a.id - b.id);
             return sorted[dayNumber % sorted.length].id;
+        },
+        visibleGames() {
+            return this.page === 'owned'
+                ? this.filteredGames.filter(g => g.owned)
+                : this.filteredGames;
+        },
+
+        // Гра, чий id збігається з параметром маршруту /games/:id (або null, якщо такого запису немає)
+        selectedGame() {
+            return this.vueGames.find(g => g.id === this.selectedId) || null;
         }
     },
     methods: {
@@ -238,6 +257,24 @@ const vueApp = createApp({
                 console.error('Помилка збереження:', error);
                 this.dbError = 'Не вдалося зберегти зміни.';
             }
+        },
+        async toggleOwned(id){
+            const game = this.vueGames.find(g => g.id === id);
+            if (!game) return;
+            game.owned = !game.owned;
+            try {
+                await addItem(game);
+            } catch (error) {
+                game.owned = !game.owned;
+                console.error('Помилка збереження:', error);
+                this.dbError = 'Не вдалося зберегти зміни.';
+            }
+        },
+
+        playersLabel(game) {
+        return game.minPlayers === game.maxPlayers
+            ? `${game.minPlayers} гравці`
+            : `${game.minPlayers}–${game.maxPlayers} гравців`;
         }
     }
 }).mount('#vue-app');
@@ -443,5 +480,94 @@ function renderTodos(todoList)
 }
 
 loadData();
-
 document.querySelector('#todos-refresh').addEventListener('click', loadData);
+
+//13
+
+// Таблиця маршрутів (hash-роутинг). Кожен запис — патерн шляху і view-функція:
+// "/" — повний список ігор; "/games/:id" — деталі однієї гри (:id — ключ у сховищі games);
+// "/owned" — ігри, що вже є в колекції (owned: true)
+const routes = [
+    { path: '/', view: renderHome },
+    { path: '/games/:id', view: renderGameDetail },
+    { path: '/owned', view: renderOwned }
+];
+
+// View-функції: каталог рендерить Vue, тому замість ручного очищення контейнера
+// кожна view перемикає реактивний стан (page, selectedId)
+function renderHome() {
+    vueApp.page = 'home';
+    vueApp.selectedId = null;
+}
+
+function renderGameDetail(params) {
+    vueApp.page = 'detail';
+    vueApp.selectedId = Number(params.id);
+}
+
+function renderOwned() {
+    vueApp.page = 'owned';
+    vueApp.selectedId = null;
+}
+
+// Порівнює шлях з патернами з таблиці routes: розбиває обидва рядки на сегменти по "/",
+// сегмент з ":" (наприклад :id) записує в params, решту порівнює буквально.
+// Повертає { view, params } або null, якщо маршрут не знайдено (сторінка 404)
+function matchRoute(path) {
+    const pathParts = path.split('/').filter(Boolean);
+
+    for (const route of routes) {
+        const routeParts = route.path.split('/').filter(Boolean);
+        if (routeParts.length !== pathParts.length) continue;
+
+        const params = {};
+        const isMatch = routeParts.every((part, i) => {
+            if (part.startsWith(':')) {
+                params[part.slice(1)] = pathParts[i];
+                return true;
+            }
+            return part === pathParts[i];
+        });
+
+        if (isMatch) return { view: route.view, params };
+    }
+
+    return null;
+}
+
+// Клієнтська навігація (hash-роутинг): змінює location.hash без перезавантаження сторінки;
+function navigate(path) {
+    location.hash = path;
+}
+
+// Делегування подій: один обробник на весь документ ловить кліки по посиланнях data-link,
+// зокрема по картках, які Vue створює динамічно
+document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[data-link]');
+    if (!link) return;
+    event.preventDefault();
+    navigate(link.getAttribute('href').slice(1));
+});
+
+// Повертає поточний шлях із хешу: "#/games/3" -> "/games/3"; порожній хеш вважається "/"
+function getCurrentPath() {
+    return location.hash.slice(1) || '/';
+}
+
+// Знаходить view для поточного шляху і викликає її з параметрами;
+function handleRoute() {
+    const match = matchRoute(getCurrentPath());
+    if (match) {
+        match.view(match.params);
+    } else {
+        vueApp.page = 'notfound';
+        vueApp.selectedId = null;
+    }
+    document.body.dataset.page = vueApp.page;
+}
+
+// Кнопки браузера «Назад/Вперед» і будь-яка зміна хешу викликають hashchange
+window.addEventListener('hashchange', handleRoute);
+
+// Перше завантаження: показуємо сторінку, що відповідає поточній адресі
+handleRoute();
