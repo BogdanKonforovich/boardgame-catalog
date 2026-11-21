@@ -419,12 +419,13 @@ filtersForm.addEventListener('submit', (event) =>{
 }) 
 
 
-// loadData() завантажує список зіграних ігор з JSONPlaceholder (мок-дані todos):
-// https://jsonplaceholder.typicode.com/todos?userId=1
+// loadData() завантажує список ігор з власного локального сервера (Node.js + Express, практикум 14):
+// GET /api/games (замість зовнішнього JSONPlaceholder з практикуму 9).
 // Показує стан завантаження, перевіряє response.ok, розбирає JSON і виводить картки;
-// у разі помилки показує зрозуміле повідомлення користувачу, а деталі пише в консоль
+// у разі помилки (наприклад, сервер вимкнено) показує зрозуміле повідомлення користувачу,
+// а деталі пише в консоль
 
-const API_URL = 'https://jsonplaceholder.typicode.com/todos?userId=1';
+const API_URL = '/api/games';
 
 async function loadData() {
 
@@ -461,19 +462,20 @@ async function loadData() {
     }
 }
 
-// Виводить дані з API у секцію "Список зіграних ігор":
-// очищає контейнер #todos-list, перетворює поля todo (title, completed)
-// на об'єкти гри (title, description) і передає їх у renderGames
+// Виводить дані з API у секцію "Ігри з сервера":
+// очищає контейнер #todos-list, перетворює поля гри (title, played)
+// на об'єкти (title, description зі статусом "Зіграно"/"Не зіграно") і передає їх у renderGames
+
 function renderTodos(todoList) 
 {
     const todosContainer = document.querySelector('#todos-list');
     todosContainer.innerHTML = '';
 
     const adapted = [];
-    for (const todo of todoList) {
+    for (const game of todoList) {
         adapted.push({
-            title: todo.title,
-            description: todo.completed ? 'Зіграно' : 'Не зіграно'
+            title: game.title,
+            description: game.played ? 'Зіграно' : 'Не зіграно'
         });
     }
     renderGames(adapted, todosContainer);
