@@ -373,3 +373,7 @@ body[data-page="notfound"] #todos {
     display: block;
     margin: 10px 0;
 }
+
+#todos-list .game {
+    min-height: auto;
+}
