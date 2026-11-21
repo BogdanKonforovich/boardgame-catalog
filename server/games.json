@@ -1,0 +1,10 @@
+[
+    { "id": 1, "title": "Шахи", "description": "Класична стратегічна гра для двох", "minPlayers": 2, "maxPlayers": 2, "genre": "strategic", "img": "assets/img/chess.webp", "played": false, "duration": 60, "owned": true },
+    { "id": 2, "title": "Монополія", "description": "Економічна гра про скупівлю нерухомості", "minPlayers": 2, "maxPlayers": 6, "genre": "economic", "img": "assets/img/monopoly.jpg", "played": false, "duration": 120, "owned": false },
+    { "id": 3, "title": "Дурень", "description": "Популярна карткова гра на удачу й тактику", "minPlayers": 2, "maxPlayers": 6, "genre": "card_based", "img": "assets/img/fool.jpg", "played": false, "duration": 30, "owned": false },
+    { "id": 4, "title": "Морський бій", "description": "Логічна гра на влучність і стратегію", "minPlayers": 2, "maxPlayers": 2, "genre": "logic_puzzles", "img": "assets/img/battleship.webp", "played": false, "duration": 20, "owned": false },
+    { "id": 5, "title": "Нарди", "description": "Гра на кубиках і стратегічне мислення", "minPlayers": 2, "maxPlayers": 2, "genre": "strategic", "img": "assets/img/backgammon.png", "played": false, "duration": 45, "owned": true },
+    { "id": 6, "title": "Дженга", "description": "Гра на спритність і стійку руку", "minPlayers": 2, "maxPlayers": 8, "genre": "logic_puzzles", "img": "assets/img/jenga.webp", "played": false, "duration": 15, "owned": false },
+    { "id": 7, "title": "Аліас", "description": "Весела командна гра на пояснення слів", "minPlayers": 4, "maxPlayers": 8, "genre": "strategic", "img": "assets/img/alias.jpg", "played": false, "duration": 45, "owned": true },
+    { "id": 8, "title": "Скрабл", "description": "Словесна гра на словниковий запас", "minPlayers": 2, "maxPlayers": 4, "genre": "logic_puzzles", "img": "assets/img/scrabble.jpg", "played": false, "duration": 60, "owned": false }
+]
